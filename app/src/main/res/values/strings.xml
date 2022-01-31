@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">BestAndroidCode</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="give_a_cat">Give Me Cat!</string>
+    <string name="i_pro">I am a pro</string>
+</resources>
