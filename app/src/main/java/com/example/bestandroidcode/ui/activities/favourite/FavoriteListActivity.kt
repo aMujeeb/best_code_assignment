@@ -1,10 +1,13 @@
-package com.example.bestandroidcode.ui.favourite
+package com.example.bestandroidcode.ui.activities.favourite
 
 import android.content.Context
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.bestandroidcode.R
 import com.example.bestandroidcode.databinding.ActivityFavoriteListBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -12,6 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class FavoriteListActivity : AppCompatActivity() {
 
     private var mFavouriteListBinding : ActivityFavoriteListBinding? = null
+    private val mFavoriteViewModel : FavouriteViewModel by viewModels()
 
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -19,16 +23,20 @@ class FavoriteListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mFavouriteListBinding = ActivityFavoriteListBinding.inflate(layoutInflater)
+        setContentView(mFavouriteListBinding!!.root)
 
-        title = "Your Favorite Cats"
-
-        val sharedPref = getSharedPreferences("default", Context.MODE_PRIVATE)
-        val currentFavoriteList = sharedPref.getStringSet("FAVORITE_LIST", HashSet())
+        title = getString(R.string.your_fav_cats)
 
         viewManager = LinearLayoutManager(this)
-        viewAdapter = FavoriteAdapter(currentFavoriteList!!.toTypedArray())
 
         mFavouriteListBinding!!.rvFavorite.layoutManager = viewManager
-        mFavouriteListBinding!!.rvFavorite.adapter = viewAdapter
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mFavoriteViewModel.mAddedFavourites.observe(this, Observer {
+            viewAdapter = FavoriteAdapter(it)
+            mFavouriteListBinding!!.rvFavorite.adapter = viewAdapter
+        })
     }
 }

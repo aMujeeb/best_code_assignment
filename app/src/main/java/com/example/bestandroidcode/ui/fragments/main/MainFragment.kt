@@ -1,6 +1,7 @@
-package com.example.bestandroidcode.ui.main
+package com.example.bestandroidcode.ui.fragments.main
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,14 +12,23 @@ import com.bumptech.glide.Glide
 import com.example.bestandroidcode.R
 import com.example.bestandroidcode.databinding.MainFragmentBinding
 import com.example.bestandroidcode.model.Cat
-import com.example.bestandroidcode.ui.advanced.AdvanceFragment
+import com.example.bestandroidcode.ui.activities.main.FavouriteCallBack
+import com.example.bestandroidcode.ui.activities.main.MainActivity
+import com.example.bestandroidcode.ui.fragments.BaseFragment
+import com.example.bestandroidcode.ui.fragments.advanced.AdvanceFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainFragment : Fragment(), View.OnClickListener {
+class MainFragment : BaseFragment(), View.OnClickListener {
+
+    private lateinit var iFavouriteCallBack : FavouriteCallBack
 
     companion object {
-        fun newInstance() = MainFragment()
+        fun newInstance(favouriteCallBack : FavouriteCallBack) :MainFragment {
+            var instance = MainFragment()
+            instance.iFavouriteCallBack = favouriteCallBack
+            return instance
+        }
     }
 
     private val viewModel: MainViewModel by viewModels()
@@ -45,41 +55,19 @@ class MainFragment : Fragment(), View.OnClickListener {
                 }
                 it?.imageUrl != null ->{
                     mMainFragmentBinding!!.mMainProgress.visibility = View.GONE
+                    iFavouriteCallBack.isFavouriteSelected(false)
                     Glide.with(this@MainFragment)
                         .load(it.imageUrl)
                         .into(mMainFragmentBinding!!.ivCat)
                 }
+                it?.isAlreadySaved == true -> {
+                    iFavouriteCallBack.isFavouriteSelected(false)
+                }
+                it?.isAdded == true -> {
+                    iFavouriteCallBack.isFavouriteSelected(true)
+                }
             }
         })
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        /*mMainFragmentBinding!!.btnLoadCat.setOnClickListener {
-            val request = ServiceBuilder.buildService(CatAPI::class.java)
-            val call = request.getCatRandom()
-
-            call.enqueue(object : Callback<List<Cat>> {
-                override fun onResponse(call: Call<List<Cat>>, response: Response<List<Cat>>) {
-                    if (response.isSuccessful) {
-
-                        currentCatObject = response.body()!!.first()
-
-                        Glide.with(this@MainFragment)
-                            .load(response.body()!!.first().url)
-                            .into(ivCat)
-
-                        val activity = activity as MainActivity
-                        activity.refreshFavoriteButton(currentCatObject!!.url)
-                    }
-                }
-
-                override fun onFailure(call: Call<List<Cat>>, t: Throwable) {
-                    Toast.makeText(activity, "${t.message}", Toast.LENGTH_SHORT).show()
-                }
-            })
-        }*/
     }
 
     override fun onClick(p0: View?) {
@@ -89,9 +77,14 @@ class MainFragment : Fragment(), View.OnClickListener {
             val advanceFragment = AdvanceFragment()
 
             val transaction = requireActivity().supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.container, advanceFragment)
+            transaction.replace(R.id.container, AdvanceFragment.newInstance(activity as MainActivity))
             transaction.addToBackStack("")
             transaction.commit()
         }
+    }
+
+    override fun addToFavoriteList() {
+        Log.d("BestApp", "Add at Main")
+        viewModel.saveCatRecord()
     }
 }

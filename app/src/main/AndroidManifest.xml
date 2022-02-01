@@ -15,8 +15,8 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         android:name=".app.BestCatApplication">
-        <activity android:name=".ui.favourite.FavoriteListActivity"/>
-        <activity android:name=".MainActivity" android:exported="true">
+        <activity android:name="com.example.bestandroidcode.ui.activities.favourite.FavoriteListActivity"/>
+        <activity android:name=".ui.activities.main.MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

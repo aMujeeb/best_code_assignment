@@ -5,4 +5,7 @@
 
     <string name="give_a_cat">Give Me Cat!</string>
     <string name="i_pro">I am a pro</string>
+    <string name="your_fav_cats">Your Favorite Cats</string>
+    <string name="tap_me">Tap Me..!!</string>
+    <string name="un_approved_answer">The Meow Lord did not approve your answer!</string>
 </resources>

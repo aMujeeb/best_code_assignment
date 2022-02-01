@@ -28,4 +28,16 @@ class RemoteDataSource @Inject constructor(
             emit(Resource.Error<List<Cat>>("Network Connectivity Exception"))
         }
     }.flowOn(Dispatchers.IO)
+
+    suspend fun requestCatBasedOnCategory(categoryId : Int) :  Flow<Resource<List<Cat>>> = flow {
+        try {
+            emit(Resource.Loading<List<Cat>>())
+            val randomCat = dataRepo.getCatBasedOnSelectedCategory(categoryId.toString())
+            emit(Resource.Success<List<Cat>>(randomCat))
+        } catch (e: HttpException) {
+            emit(Resource.Error<List<Cat>>("Un Expected Error. Please Try again."))
+        } catch (e: IOException) {
+            emit(Resource.Error<List<Cat>>("Network Connectivity Exception"))
+        }
+    }.flowOn(Dispatchers.IO)
 }

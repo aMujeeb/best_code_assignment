@@ -1,4 +1,4 @@
-package com.example.bestandroidcode
+package com.example.bestandroidcode.ui.activities.main
 
 import android.content.Context
 import android.content.Intent
@@ -6,19 +6,24 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.bestandroidcode.R
 import com.example.bestandroidcode.databinding.MainActivityBinding
-import com.example.bestandroidcode.ui.advanced.AdvanceFragment
-import com.example.bestandroidcode.ui.favourite.FavoriteListActivity
-import com.example.bestandroidcode.ui.main.MainFragment
+import com.example.bestandroidcode.ui.fragments.advanced.AdvanceFragment
+import com.example.bestandroidcode.ui.activities.favourite.FavoriteListActivity
+import com.example.bestandroidcode.ui.fragments.BaseFragment
+import com.example.bestandroidcode.ui.fragments.main.MainFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() , FavouriteCallBack {
 
     // Best Android Code does not need comments to explain the code
     private var mMainActivityBinding : MainActivityBinding? = null
+
+    private val mMainActivityViewModel : MainActivityViewModel by viewModels()
 
     private lateinit var sharedPref: SharedPreferences
 
@@ -33,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                    .replace(mMainActivityBinding!!.container.id, MainFragment.newInstance())
+                    .replace(mMainActivityBinding!!.container.id, MainFragment.newInstance(this))
                     .commitNow()
         }
     }
@@ -50,11 +55,10 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_favorite -> {
 
-            val currentFavoriteList = sharedPref.getStringSet("FAVORITE_LIST", HashSet())
+            val f: BaseFragment? = supportFragmentManager.findFragmentById(mMainActivityBinding!!.container.id) as BaseFragment?
+            f?.addToFavoriteList()
 
-            val f: Fragment? = supportFragmentManager.findFragmentById(mMainActivityBinding!!.container.id)
-
-            if (f is MainFragment) {
+            /*if (f is MainFragment) {
                 if (f.currentCatObject != null) {
                     val catImageUrl = f.currentCatObject!!.url
 
@@ -98,7 +102,7 @@ class MainActivity : AppCompatActivity() {
                         refreshFavoriteButton(catImageUrl)
                     }
                 }
-            }
+            }*/
 
             true
         }
@@ -114,13 +118,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun refreshFavoriteButton(catImageUrl: String) {
+    override fun isFavouriteSelected(isSelected: Boolean) {
         if (mOptionsMenu != null) {
-            val currentFavoriteList = sharedPref.getStringSet("FAVORITE_LIST", HashSet())
-
             val favoriteItem = mOptionsMenu!!.findItem(R.id.action_favorite)
-
-            if (currentFavoriteList!!.contains(catImageUrl)) {
+            if (isSelected) {
                 favoriteItem.setIcon(R.drawable.baseline_favorite_black_24)
             } else {
                 favoriteItem.setIcon(R.drawable.baseline_favorite_border_black_24)
