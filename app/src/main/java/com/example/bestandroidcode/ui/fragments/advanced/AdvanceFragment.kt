@@ -1,38 +1,31 @@
 package com.example.bestandroidcode.ui.fragments.advanced
 
+import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import android.widget.AdapterView.OnItemSelectedListener
+import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.example.bestandroidcode.R
 import com.example.bestandroidcode.databinding.AdvanceFragmentBinding
-import com.example.bestandroidcode.model.Cat
-import com.example.bestandroidcode.ui.activities.main.FavouriteCallBack
-import com.example.bestandroidcode.ui.fragments.BaseFragment
+import com.example.bestandroidcode.ui.activities.main.MainActivityViewModel
+import com.example.bestandroidcode.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class AdvanceFragment : BaseFragment(), View.OnClickListener {
 
     private var mAdvancedFragmentBinding: AdvanceFragmentBinding? = null
-    private lateinit var iFavouriteCallBack: FavouriteCallBack
     private val mAdvancedViewModel: AdvancedViewModel by viewModels()
+    private val mMainActivityViewModel: MainActivityViewModel by activityViewModels()
 
-    companion object {
-        fun newInstance(favouriteCallBack: FavouriteCallBack): AdvanceFragment {
-            var instance = AdvanceFragment()
-            instance.iFavouriteCallBack = favouriteCallBack
-            return instance
-        }
-    }
-
-    var currentCatObject: Cat? = null
     private val categoryList = arrayOf(
         "Boxes",
         "Clothes",
@@ -44,56 +37,12 @@ class AdvanceFragment : BaseFragment(), View.OnClickListener {
     )
     private val categoryIdList = arrayOf(5, 15, 1, 14, 2, 4, 7)
 
-    private var selectedCategoryId: Int = -1
-    private var variableA: Int = 0
-    private var variableB: Int = 0
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
         mAdvancedFragmentBinding = AdvanceFragmentBinding.inflate(inflater, container, false)
-
-        /*btnAnswer.setOnClickListener {
-            val answer = etAnswer.text.toString().toIntOrNull()
-
-            if (answer != null) {
-                if (variableA + variableB == answer) {
-                    val request = ServiceBuilder.buildService(CatAPI::class.java)
-                    val call = request.getCatBasedOnCategory(selectedCategoryId.toString())
-
-                    call.enqueue(object : Callback<List<Cat>> {
-                        override fun onResponse(call: Call<List<Cat>>, response: Response<List<Cat>>) {
-                            if (response.isSuccessful) {
-
-                                currentCatObject = response.body()!!.first()
-
-                                Glide.with(this@AdvanceFragment)
-                                    .load(response.body()!!.first().url)
-                                    .into(ivCat)
-
-                                val activity = activity as MainActivity
-                                activity.refreshFavoriteButton(currentCatObject!!.url)
-
-                                generateQuestion()
-                                etAnswer.setText("")
-                            }
-                        }
-
-                        override fun onFailure(call: Call<List<Cat>>, t: Throwable) {
-                            Toast.makeText(activity, "${t.message}", Toast.LENGTH_SHORT).show()
-                        }
-                    })
-                } else {
-                    Toast.makeText(activity, "The Meow Lord did not approve your answer!", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Toast.makeText(activity, "The Meow Lord did not approve your answer!", Toast.LENGTH_SHORT).show()
-            }
-
-        }*/
-
         return mAdvancedFragmentBinding!!.root
     }
 
@@ -120,7 +69,7 @@ class AdvanceFragment : BaseFragment(), View.OnClickListener {
             }
 
         mAdvancedFragmentBinding!!.btnAnswer.setOnClickListener(this)
-
+        mMainActivityViewModel.mIsAddedSuccessfully.value = false
         mAdvancedViewModel.generateQuestion()
         mAdvancedViewModel.mAdvanceViewState.observe(viewLifecycleOwner, Observer {
             when {
@@ -139,16 +88,15 @@ class AdvanceFragment : BaseFragment(), View.OnClickListener {
                 }
                 it?.imageUrl != null -> {
                     mAdvancedFragmentBinding!!.mProgressAdvanced.visibility = View.GONE
-                    iFavouriteCallBack.isFavouriteSelected(false)
                     Glide.with(this@AdvanceFragment)
                         .load(it.imageUrl)
                         .into(mAdvancedFragmentBinding!!.ivCat)
                 }
                 it?.isAlreadySaved == true -> {
-                    iFavouriteCallBack.isFavouriteSelected(false)
+                    mMainActivityViewModel.mIsAddedSuccessfully.value = true
                 }
                 it?.isAdded == true -> {
-                    iFavouriteCallBack.isFavouriteSelected(true)
+                    mMainActivityViewModel.mIsAddedSuccessfully.value = true
                 }
             }
         })
@@ -162,7 +110,23 @@ class AdvanceFragment : BaseFragment(), View.OnClickListener {
     }
 
     override fun addToFavoriteList() {
-        Log.d("BestApp", "Add at Favourite")
         mAdvancedViewModel.saveCatRecord()
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        val callback: OnBackPressedCallback = object : OnBackPressedCallback(
+            true
+        ) {
+            override fun handleOnBackPressed() {
+                mMainActivityViewModel.mIsAddedSuccessfully.value = false
+                this.remove()
+                requireActivity().onBackPressed()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            callback
+        )
     }
 }

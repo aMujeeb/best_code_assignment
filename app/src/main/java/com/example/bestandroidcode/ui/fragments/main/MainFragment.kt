@@ -5,36 +5,23 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.bestandroidcode.R
 import com.example.bestandroidcode.databinding.MainFragmentBinding
-import com.example.bestandroidcode.model.Cat
-import com.example.bestandroidcode.ui.activities.main.FavouriteCallBack
-import com.example.bestandroidcode.ui.activities.main.MainActivity
-import com.example.bestandroidcode.ui.fragments.BaseFragment
-import com.example.bestandroidcode.ui.fragments.advanced.AdvanceFragment
+import com.example.bestandroidcode.ui.activities.main.MainActivityViewModel
+import com.example.bestandroidcode.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainFragment : BaseFragment(), View.OnClickListener {
 
-    private lateinit var iFavouriteCallBack : FavouriteCallBack
-
-    companion object {
-        fun newInstance(favouriteCallBack : FavouriteCallBack) :MainFragment {
-            var instance = MainFragment()
-            instance.iFavouriteCallBack = favouriteCallBack
-            return instance
-        }
-    }
-
     private val viewModel: MainViewModel by viewModels()
+    private val mMainActivityViewModel: MainActivityViewModel by activityViewModels()
     private var mMainFragmentBinding : MainFragmentBinding? = null
-
-    var currentCatObject: Cat? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -55,16 +42,15 @@ class MainFragment : BaseFragment(), View.OnClickListener {
                 }
                 it?.imageUrl != null ->{
                     mMainFragmentBinding!!.mMainProgress.visibility = View.GONE
-                    iFavouriteCallBack.isFavouriteSelected(false)
                     Glide.with(this@MainFragment)
                         .load(it.imageUrl)
                         .into(mMainFragmentBinding!!.ivCat)
                 }
                 it?.isAlreadySaved == true -> {
-                    iFavouriteCallBack.isFavouriteSelected(false)
+                    mMainActivityViewModel.mIsAddedSuccessfully.value = true
                 }
                 it?.isAdded == true -> {
-                    iFavouriteCallBack.isFavouriteSelected(true)
+                    mMainActivityViewModel.mIsAddedSuccessfully.value = true
                 }
             }
         })
@@ -74,12 +60,7 @@ class MainFragment : BaseFragment(), View.OnClickListener {
         if(p0 == mMainFragmentBinding!!.btnLoadCat) {
             viewModel.requestRandomCatImage()
         } else if(p0 == mMainFragmentBinding!!.btnProUser) {
-            val advanceFragment = AdvanceFragment()
-
-            val transaction = requireActivity().supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.container, AdvanceFragment.newInstance(activity as MainActivity))
-            transaction.addToBackStack("")
-            transaction.commit()
+            findNavController().navigate(R.id.action_mainFragment_to_advanceFragment)
         }
     }
 

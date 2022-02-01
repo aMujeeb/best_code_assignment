@@ -11,6 +11,7 @@ import com.example.bestandroidcode.common.Resource
 import com.example.bestandroidcode.data.RemoteDataSource
 import com.example.bestandroidcode.data.db.dao.CatDao
 import com.example.bestandroidcode.model.Cat
+import com.example.bestandroidcode.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -21,12 +22,9 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val mCatDao: CatDao
-) : ViewModel() {
+) : BaseViewModel() {
 
     var mMainViewState = MutableLiveData<MainViewStates>()
-    var mAddedFavourites : LiveData<List<Cat>> = mCatDao.getAllFavouriteCats()
-
-    private var mSelectedCat :Cat? = null
 
     fun requestRandomCatImage() {
         viewModelScope.launch {
@@ -56,13 +54,7 @@ class MainViewModel @Inject constructor(
                 Log.d("BestApp", "Added:$x")
             } catch (e : SQLiteConstraintException) {
                 mMainViewState.postValue(MainViewStates(isAlreadySaved = true))
-                mSelectedCat?.let { mCatDao.removeFavouriteCat(it) }
             }
-
         }
-    }
-
-    fun getAllSavedFavouriteCats() : LiveData<List<Cat>> {
-        return mAddedFavourites
     }
 }

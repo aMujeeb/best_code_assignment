@@ -9,6 +9,7 @@ import com.example.bestandroidcode.common.Resource
 import com.example.bestandroidcode.data.RemoteDataSource
 import com.example.bestandroidcode.data.db.dao.CatDao
 import com.example.bestandroidcode.model.Cat
+import com.example.bestandroidcode.ui.base.BaseViewModel
 import com.example.bestandroidcode.ui.fragments.main.MainViewStates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -20,14 +21,12 @@ import javax.inject.Inject
 class AdvancedViewModel @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val mCatDao: CatDao
-): ViewModel() {
+): BaseViewModel() {
 
     var mAdvanceViewState = MutableLiveData<AdvanceViewState>()
     var mSelectedCategory = 0
     var variableA = 0
     var variableB = 0
-
-    private var mSelectedCat : Cat? = null
 
     fun generateQuestion() {
         variableA = (0..10).random()
@@ -76,7 +75,6 @@ class AdvancedViewModel @Inject constructor(
                 Log.d("BestApp", "Added:$x")
             } catch (e : SQLiteConstraintException) {
                 mAdvanceViewState.postValue(AdvanceViewState(isAlreadySaved = true))
-                mSelectedCat?.let { mCatDao.removeFavouriteCat(it) }
             }
         }
     }

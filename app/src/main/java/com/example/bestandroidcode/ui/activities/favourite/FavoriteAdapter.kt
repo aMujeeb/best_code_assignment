@@ -30,7 +30,7 @@ class FavoriteAdapter(private val myDataset: List<Cat>?) :
         return if (myDataset.isNullOrEmpty()) {
             0
         } else {
-            myDataset!!.size
+            myDataset.size
         }
     }
 }
