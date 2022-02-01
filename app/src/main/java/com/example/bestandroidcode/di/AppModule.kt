@@ -1,11 +1,17 @@
 package com.example.bestandroidcode.di
 
+import android.content.Context
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import com.example.bestandroidcode.data.db.BestAppCatDb
 import com.example.bestandroidcode.network.CatDataRepositoryImpl
 import com.example.bestandroidcode.network.api.CatAPI
 import com.example.bestandroidcode.network.repository.CatDataRepository
+import com.example.bestandroidcode.util.BestAppConstants.CAT_DATABASE_NAME
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -43,4 +49,18 @@ class AppModule {
     fun provideCatRepository(api : CatAPI) : CatDataRepository {
         return CatDataRepositoryImpl(api)
     }
+
+    @Provides
+    @Singleton
+    fun provideCatDatabase(
+        @ApplicationContext app : Context
+    ) = Room.databaseBuilder(
+        app,
+        BestAppCatDb::class.java,
+        CAT_DATABASE_NAME
+    ).build()
+
+    @Singleton
+    @Provides
+    fun provideCatDao(db : BestAppCatDb) = db.getCatDao()
 }

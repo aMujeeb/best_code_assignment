@@ -1,12 +1,13 @@
-package com.example.bestandroidcode.ui.favourite
+package com.example.bestandroidcode.ui.activities.favourite
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.bestandroidcode.databinding.FavoriteRowBinding
+import com.example.bestandroidcode.model.Cat
 
-class FavoriteAdapter(private val myDataset: Array<String>) :
+class FavoriteAdapter(private val myDataset: List<Cat>?) :
     RecyclerView.Adapter<FavoriteAdapter.MyViewHolder>() {
 
     class MyViewHolder(val view: FavoriteRowBinding) : RecyclerView.ViewHolder(view.root)
@@ -21,9 +22,15 @@ class FavoriteAdapter(private val myDataset: Array<String>) :
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         Glide.with(holder.itemView.context)
-            .load(myDataset[position])
+            .load(myDataset?.get(position)?.url)
             .into(holder.view.ivCat)
     }
 
-    override fun getItemCount() = myDataset.size
+    override fun getItemCount(): Int {
+        return if (myDataset.isNullOrEmpty()) {
+            0
+        } else {
+            myDataset!!.size
+        }
+    }
 }
