@@ -9,10 +9,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FavouriteViewModel @Inject constructor(
-    private val mCatDao: CatDao
+    mCatDao: CatDao
 ): ViewModel(){
 
     var mAddedFavourites : LiveData<List<Cat>> = mCatDao.getAllFavouriteCats()
-
-
 }
