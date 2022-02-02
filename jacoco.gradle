@@ -1,0 +1,88 @@
+
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+project.afterEvaluate {
+    // Grab all build types and product flavors
+    def buildTypes = android.buildTypes.collect { type -> type.name }
+    def productFlavors = android.productFlavors.collect { flavor -> flavor.name }
+
+    // When no product flavors defined, use empty
+    if (!productFlavors) productFlavors.add('')
+
+    productFlavors.each { productFlavorName ->
+        buildTypes.each { buildTypeName ->
+            def sourceName, sourcePath
+            if (!productFlavorName) {
+                sourceName = sourcePath = "${buildTypeName}"
+            } else {
+                sourceName = "${productFlavorName}${buildTypeName.capitalize()}"
+                sourcePath = "${productFlavorName}/${buildTypeName}"
+            }
+            def testTaskName = "test${sourceName.capitalize()}UnitTest"
+
+            // Create coverage task of form 'testFlavorTypeCoverage' depending on 'testFlavorTypeUnitTest'
+            task "${testTaskName}Coverage" (type:JacocoReport, dependsOn: "$testTaskName") {
+                group = "Reporting"
+                description = "Generate Jacoco coverage reports on the ${sourceName.capitalize()} build."
+
+                def excludes = [
+                        '**/R.class',
+                        '**/R$*.class',
+                        '**/Manifest*.*',
+                        'android/**/*.*',
+                        '**/BuildConfig.*',
+                        '**/*$ViewBinder*.*',
+                        '**/*$ViewInjector*.*',
+                        '**/Lambda$*.class',
+                        '**/Lambda.class',
+                        '**/*Lambda.class',
+                        '**/*Lambda*.class',
+                        'com/dishserve/app/services/*.*',
+                        'com/dishserve/app/rest/*.*',
+                        'com/dishserve/app/rest/api/*.*',
+                        'com/dishserve/app/ui/activities/*.*',
+                        'com/dishserve/app/ui/fragments/*.*',
+                        'com/dishserve/app/ui/adapters/*.*',
+                        'com/dishserve/app/ui/dialogs/*.*',
+                        'com/dishserve/app/ui/base/*.*',
+                        'com/dishserve/app/models/*Creator.*',
+                        'com/dishserve/app/util/ImageUtil.*',
+                        'com/dishserve/app/util/SpinnerItem.*',
+                        'com/dishserve/app/util/ExpireDayDecorator.*',
+                        'com/dishserve/app/util/JobSchedulerUtil.*',
+                        'com/dishserve/app/util/NotificationGenerator.*',
+                        'com/dishserve/app/util/NotificationUtils.*',
+                        'com/dishserve/app/util/NotificationsSoundsUtil.*',
+                        'com/dishserve/app/util/FileUtils.*',
+                        'com/dishserve/app/ui/adapters/view_holders/*.*',
+                        'com/dishserve/app/util/SingleLiveEvent.*',
+                        'com/dishserve/app/util/NetworkConnectivityUtil.*',
+                        'com/dishserve/app/util/LocationUtil.*'
+                ]
+
+                def javaClasses = fileTree(dir: "${project.buildDir}/intermediates/classes/${sourcePath}", excludes: excludes)
+                def kotlinClasses = fileTree(dir: "${buildDir}/tmp/kotlin-classes/${sourceName}", excludes: excludes)
+                getClassDirectories().from(files([javaClasses, kotlinClasses]))
+
+                def coverageSourceDirs = [
+                        "src/main/java",
+                        "src/$productFlavorName/java",
+                        "src/$buildTypeName/java"
+                ]
+
+                additionalSourceDirs.from(files(coverageSourceDirs))
+                sourceDirectories.from(files(coverageSourceDirs))
+                executionData.from(files("${project.buildDir}/jacoco/${testTaskName}.exec"))
+
+                reports {
+                    xml.enabled = true
+                    html.enabled = true
+                }
+            }
+        }
+    }
+}

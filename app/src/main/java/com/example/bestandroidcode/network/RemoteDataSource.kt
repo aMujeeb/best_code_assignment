@@ -1,4 +1,4 @@
-package com.example.bestandroidcode.data
+package com.example.bestandroidcode.network
 
 import com.example.bestandroidcode.common.Resource
 import com.example.bestandroidcode.model.Cat

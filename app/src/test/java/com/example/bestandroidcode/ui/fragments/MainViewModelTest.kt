@@ -1,13 +1,9 @@
 package com.example.bestandroidcode.ui.fragments
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.bestandroidcode.data.RemoteDataSource
+import com.example.bestandroidcode.network.RemoteDataSource
 import com.example.bestandroidcode.data.db.dao.CatDao
-import com.example.bestandroidcode.model.Cat
 import com.example.bestandroidcode.ui.fragments.main.MainViewModel
 import com.example.bestandroidcode.util.MainCoroutineRule
-import com.example.bestandroidcode.util.TestCoroutineRule
-import io.mockk.every
 import io.mockk.mockk
 import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi

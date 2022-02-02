@@ -11,9 +11,20 @@
         <action
             android:id="@+id/action_mainFragment_to_advanceFragment"
             app:destination="@id/advanceFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_favouriteListFragment"
+            app:destination="@id/favouriteListFragment" />
     </fragment>
     <fragment
         android:id="@+id/advanceFragment"
         android:name="com.example.bestandroidcode.ui.fragments.advanced.AdvanceFragment"
-        android:label="AdvanceFragment" />
+        android:label="AdvanceFragment" >
+        <action
+            android:id="@+id/action_advanceFragment_to_favouriteListFragment"
+            app:destination="@id/favouriteListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/favouriteListFragment"
+        android:name="com.example.bestandroidcode.ui.fragments.list.FavouriteListFragment"
+        android:label="FavouriteListFragment" />
 </navigation>

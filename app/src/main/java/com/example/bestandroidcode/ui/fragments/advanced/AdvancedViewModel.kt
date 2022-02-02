@@ -3,14 +3,11 @@ package com.example.bestandroidcode.ui.fragments.advanced
 import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bestandroidcode.common.Resource
-import com.example.bestandroidcode.data.RemoteDataSource
+import com.example.bestandroidcode.network.RemoteDataSource
 import com.example.bestandroidcode.data.db.dao.CatDao
-import com.example.bestandroidcode.model.Cat
 import com.example.bestandroidcode.ui.base.BaseViewModel
-import com.example.bestandroidcode.ui.fragments.main.MainViewStates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
