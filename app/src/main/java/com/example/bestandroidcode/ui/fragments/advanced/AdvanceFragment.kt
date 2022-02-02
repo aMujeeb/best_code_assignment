@@ -75,6 +75,7 @@ class AdvanceFragment : BaseFragment(), View.OnClickListener {
             when {
                 it?.mGenerateQuestion != null -> {
                     mAdvancedFragmentBinding!!.tvQuestion.text = it.mGenerateQuestion
+                    mAdvancedFragmentBinding!!.etAnswer.text.clear()
                 }
                 it?.mIsAnswerWrong == true -> {
                     Toast.makeText(

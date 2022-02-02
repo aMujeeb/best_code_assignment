@@ -31,7 +31,7 @@ class AdvancedViewModel @Inject constructor(
     fun generateQuestion() {
         variableA = (0..10).random()
         variableB = (0..10).random()
-        mAdvanceViewState.value = AdvanceViewState(mGenerateQuestion = "${variableA} + ${variableB} = ?")
+        mAdvanceViewState.postValue(AdvanceViewState(mGenerateQuestion = "${variableA} + ${variableB} = ?"))
     }
 
     fun setSelectedCategory(category : Int) {
@@ -48,6 +48,8 @@ class AdvancedViewModel @Inject constructor(
                                 val response = result.data
                                 mSelectedCat = result.data?.get(0)
                                 mAdvanceViewState.value = AdvanceViewState(imageUrl = response?.get(0)?.url, isLoading = false)
+                                //Generate a new Question on success
+                                generateQuestion()
                             }
                             is Resource.Error -> {
                                 mAdvanceViewState.value = AdvanceViewState(errorMessage = result.message, isLoading = false)
