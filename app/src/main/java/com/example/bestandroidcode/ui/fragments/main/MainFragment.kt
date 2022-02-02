@@ -69,4 +69,8 @@ class MainFragment : BaseFragment(), View.OnClickListener {
         Log.d("BestApp", "Add at Main")
         viewModel.saveCatRecord()
     }
+
+    override fun navigateToFavourite() {
+        findNavController().navigate(R.id.action_mainFragment_to_favouriteListFragment)
+    }
 }

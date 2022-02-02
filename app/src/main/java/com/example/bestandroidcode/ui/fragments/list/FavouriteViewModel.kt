@@ -1,4 +1,4 @@
-package com.example.bestandroidcode.ui.activities.favourite
+package com.example.bestandroidcode.ui.fragments.list
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel

@@ -1,6 +1,5 @@
 package com.example.bestandroidcode.ui.activities.main
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -9,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.bestandroidcode.R
 import com.example.bestandroidcode.databinding.MainActivityBinding
-import com.example.bestandroidcode.ui.activities.favourite.FavoriteListActivity
 import com.example.bestandroidcode.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -47,20 +45,22 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_favorite -> {
-            val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
-            val f : BaseFragment? = navHostFragment?.childFragmentManager?.fragments?.get(0) as BaseFragment?
-            f?.addToFavoriteList()
+            getBaseFragment()?.addToFavoriteList()
             true
         }
 
         R.id.action_favorite_list -> {
-            val intent = Intent(this, FavoriteListActivity::class.java)
-            startActivity(intent)
+            getBaseFragment()?.navigateToFavourite()
             true
         }
 
         else -> {
             super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun getBaseFragment(): BaseFragment? {
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
+        return navHostFragment?.childFragmentManager?.fragments?.get(0) as BaseFragment?
     }
 }

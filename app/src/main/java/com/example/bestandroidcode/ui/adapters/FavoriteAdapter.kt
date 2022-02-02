@@ -1,4 +1,4 @@
-package com.example.bestandroidcode.ui.activities.favourite
+package com.example.bestandroidcode.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

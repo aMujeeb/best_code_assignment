@@ -11,6 +11,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.bestandroidcode.R
 import com.example.bestandroidcode.databinding.AdvanceFragmentBinding
@@ -20,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class AdvanceFragment : BaseFragment(), View.OnClickListener {
+class AdvanceFragment : BaseFragment(), View.OnClickListener, OnItemSelectedListener {
 
     private var mAdvancedFragmentBinding: AdvanceFragmentBinding? = null
     private val mAdvancedViewModel: AdvancedViewModel by viewModels()
@@ -53,21 +54,8 @@ class AdvanceFragment : BaseFragment(), View.OnClickListener {
             ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categoryList)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         mAdvancedFragmentBinding!!.spCategory.adapter = adapter
-
-        mAdvancedFragmentBinding!!.spCategory.onItemSelectedListener =
-            object : OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View,
-                    position: Int,
-                    id: Long
-                ) {
-                    mAdvancedViewModel.setSelectedCategory(categoryIdList[position])
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-            }
-
+        mAdvancedFragmentBinding!!.spCategory.onItemSelectedListener = this
+        mMainActivityViewModel.mIsAddedSuccessfully.value = false
         mAdvancedFragmentBinding!!.btnAnswer.setOnClickListener(this)
         mMainActivityViewModel.mIsAddedSuccessfully.value = false
         mAdvancedViewModel.generateQuestion()
@@ -89,6 +77,7 @@ class AdvanceFragment : BaseFragment(), View.OnClickListener {
                 }
                 it?.imageUrl != null -> {
                     mAdvancedFragmentBinding!!.mProgressAdvanced.visibility = View.GONE
+                    mMainActivityViewModel.mIsAddedSuccessfully.value = false
                     Glide.with(this@AdvanceFragment)
                         .load(it.imageUrl)
                         .into(mAdvancedFragmentBinding!!.ivCat)
@@ -130,4 +119,14 @@ class AdvanceFragment : BaseFragment(), View.OnClickListener {
             callback
         )
     }
+
+    override fun navigateToFavourite() {
+        findNavController().navigate(R.id.action_advanceFragment_to_favouriteListFragment)
+    }
+
+    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+        mAdvancedViewModel.setSelectedCategory(categoryIdList[p2])
+    }
+
+    override fun onNothingSelected(p0: AdapterView<*>?) {}
 }
