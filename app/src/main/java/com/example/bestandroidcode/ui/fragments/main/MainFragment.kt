@@ -41,6 +41,7 @@ class MainFragment : BaseFragment(), View.OnClickListener {
                     mMainFragmentBinding!!.mMainProgress.visibility = View.VISIBLE
                 }
                 it?.imageUrl != null ->{
+                    mMainActivityViewModel.mIsAddedSuccessfully.value = false
                     mMainFragmentBinding!!.mMainProgress.visibility = View.GONE
                     Glide.with(this@MainFragment)
                         .load(it.imageUrl)
